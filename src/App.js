@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState,useEffect} from 'react';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import axios from 'axios'
+import Pizza from './components/Pizza';
+import Burger from './components/Burger';
+import Cart from './components/Cart';
+import Home from './components/Home';
+import Header from './components/Header';
+const url ="https://fod-app.herokuapp.com";
+export const FoodContext = React.createContext();
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+  let [data,setData]=useState([]);
+  let [cart,setCart]=useState([]);
+  let [cartValue,setCartValue]=useState(cart.length)
+
+  useEffect(()=>{
+    getData()
+  },[])
+
+  let getData = async()=>{
+    let res = await axios.get(`${url}/food`)
+    console.log(res.data)
+    setData(res.data)
+  }
+  return <>
+  <Router>
+    <FoodContext.Provider value={{data,cart,setCart,cartValue,setCartValue,url}}>
+      <Header/>
+        <Routes>
+          <Route path='/pizza' element={<Pizza/>}/>
+          <Route path='/burger' element={<Burger/>}/>
+          <Route path='/cart' element={<Cart/>}/>
+          <Route path='/' element={<Home/>}/>
+        </Routes>
+      </FoodContext.Provider>
+  </Router>
+  </>
 }
 
 export default App;
